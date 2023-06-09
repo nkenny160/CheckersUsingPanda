@@ -50,9 +50,10 @@ def all_close(goal, actual, tolerance):
     return True
 
 
-class playCheckers:
-    def __init__(self):  
+class playCheckers():
+    def __init__(self, gameInstance):  
         #board array
+        self.gameInstance = gameInstance
         self.board=[0]*64
 
         #positions in the top row
@@ -69,27 +70,17 @@ class playCheckers:
         #3 is a black king
         #4 is red king
 
-        """
-        0  1  2  3  4  5  6  7 
-        8  9  10 11 12 13 14 15 
-        16 17 18 19 20 21 22 23 
-        24 25 26 27 28 29 30 31 
-        32 33 34 35 36 37 38 39 
-        40 41 42 43 44 45 46 47 
-        48 49 50 51 52 53 54 55 
-        56 57 58 59 60 61 62 63 
-        """
         self.wasTake = False
         self.playerTurn = 1
         self.setupBoard()
 
-    def callArm(start, end, remove):
+    def callArm(self, start, end, remove):
         #start is the checker starting index
         #end is checker ending index
         #remove will be position of checker to be removed if needed
         #otherwise -1
-        move_group = MoveGroupPythonInterfaceTutorial()
-        move_group.plan_and_execute_play(start,end,remove)
+        
+        self.gameInstance.plan_and_execute_play(start,end,remove)
         pass
 
 
@@ -110,6 +101,7 @@ class playCheckers:
             print("Player 1 Wins!")
         elif winner == 2:
             print("Player 2 Wins!")
+        exit()
 
     #moving a piece from the top of the board to the bottom of the board
     def moveDown(self, start, end, enemy):
@@ -201,29 +193,27 @@ class playCheckers:
     #0 means enemy piece are black, 1 means enemy pieces are red
     def makeMove(self, start, end, player):
         board = self.board
-        moveDown = self.moveDown
-        moveUp = self.moveUp
 
         if player==1:
             #black pieces
             if board[start]==1:
-                return moveDown(board, start, end, 0)
+                return self.moveDown(start, end, 0)
             elif board[start]==3:
                 if end-start>0:
-                    return moveDown(board, start, end, 0)
+                    return self.moveDown(start, end, 0)
                 elif end-start<0:
-                    return moveUp(board, start, end, 0)
+                    return self.moveUp(start, end, 0)
             print("Invalid")
             return False
         elif player==2:
             #red pieces
             if board[start]==2:
-                return moveUp(board, start, end, 1)
+                return self.moveUp(start, end, 1)
             elif board[start]==4:
                 if end-start>0:
-                    return moveDown(board, start, end, 1)
+                    return self.moveDown(start, end, 1)
                 elif end-start<0:
-                    return moveUp(board, start, end, 1)
+                    return self.moveUp(start, end, 1)
             print("Invalid")
             return False
         return False
@@ -279,15 +269,15 @@ class playCheckers:
 
         moveValid = self.makeMove(start, end, 1)
         if not moveValid:
-            self.p1Turn(board)
+            self.p1Turn()
         if wasTake:
-            self.p1Took(board, end)
+            self.p1Took(end)
         return True
     #p2 turn, did not take prev move
     def p2Turn(self):
         wasTake = self.wasTake
         board = self.board
-        self.printBoard(board)
+        self.printBoard()
         print("Player 2")
         print("Type current piece position or -1 to Forfeit: ")
         start = self.getPos()
@@ -369,6 +359,11 @@ class MoveGroupPythonInterfaceTutorial(object):
         scene = moveit_commander.PlanningSceneInterface()
         group_name = "panda_arm"
         move_group = moveit_commander.MoveGroupCommander(group_name)
+
+        #speed it up
+        move_group.set_max_velocity_scaling_factor(1)
+        move_group.set_max_acceleration_scaling_factor(1)
+
         display_trajectory_publisher = rospy.Publisher(
             "/move_group/display_planned_path",
             moveit_msgs.msg.DisplayTrajectory,
@@ -615,7 +610,7 @@ class MoveGroupPythonInterfaceTutorial(object):
                 return True
 
             # Sleep so that we give other threads time on the processor
-            rospy.sleep(0.1)
+            # rospy.sleep(0.1)
             seconds = rospy.get_time()
 
         # If we exited the while loop without returning then we timed out
@@ -791,7 +786,7 @@ def main():
     try:
         #setup
         tutorial = MoveGroupPythonInterfaceTutorial()
-        gameController = playCheckers()
+        gameController = playCheckers(tutorial)
         
         tutorial.go_to_joint_state() #go home
         tutorial.add_box() #add table, checker board, and boxes to scene
