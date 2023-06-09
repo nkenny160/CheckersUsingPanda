@@ -50,21 +50,19 @@ def all_close(goal, actual, tolerance):
     return True
 
 
-class playCheckers():
-  def boardInit():  
+class playCheckers:
+    def __init__(self):  
         #board array
-        board=[0]*64
-
-        #tutorial = 
+        self.board=[0]*64
 
         #positions in the top row
-        topRow=[0,1,2,3,4,5,6,7]
+        self.topRow=[0,1,2,3,4,5,6,7]
 
         #positions in the bottom row
-        bottomRow=[56,57,58,59,60,61,62,63]
+        self.bottomRow=[56,57,58,59,60,61,62,63]
 
         #game is happening
-        gameOn=True
+        self.gameOn=True
         #0 is an empty space
         #1 is a black checker
         #2 is a red checker
@@ -81,6 +79,9 @@ class playCheckers():
         48 49 50 51 52 53 54 55 
         56 57 58 59 60 61 62 63 
         """
+        self.wasTake = False
+        self.playerTurn = 1
+        self.setupBoard()
 
     def callArm(start, end, remove):
         #start is the checker starting index
@@ -92,16 +93,16 @@ class playCheckers():
 
 
     #get a position input from user
-    def getPos():
+    def getPos(self):
         try:
             return int(input(""))
         except:
             print("Invalid input. Please enter number between 0 and 63")
-            return getPos()
+            return self.getPos()
 
     #forfeit game
-    def forfeit(winner):
-        global gameOn
+    def forfeit(self, winner):
+        gameOn = self.gameOn
         gameOn=False
         if winner == 1:
             print("Player 1 Wins!")
@@ -109,8 +110,11 @@ class playCheckers():
             print("Player 2 Wins!")
 
     #moving a piece from the top of the board to the bottom of the board
-    def moveDown(board, start, end, enemy):
-        global wasTake
+    def moveDown(self, start, end, enemy):
+        wasTake = self.wasTake
+        board = self.board
+        callArm = self.callArm ##this needs to change to the robot method
+        bottomRow = self.bottomRow
         #black pieces typically
         #check if move is diagonal and not going off end of board
         #makes sure you dont move one space after a take
@@ -151,8 +155,11 @@ class playCheckers():
         print("Invalid")
         return False
 
-    def moveUp(board, start, end, enemy):
-        global wasTake
+    def moveUp(self, start, end, enemy):
+        wasTake = self.wasTake
+        board = self.board
+        callArm = self.callArm
+        topRow = self.topRow
         #red pieces typically
         if ((start-end==9 and end%8 != 7) or (start-end==7 and end%8!=8)) and not wasTake:
             if board[end]==0:
@@ -190,7 +197,11 @@ class playCheckers():
         return False
     #determines which move is being made
     #0 means enemy piece are black, 1 means enemy pieces are red
-    def makeMove(board, start, end, player):
+    def makeMove(self, start, end, player):
+        board = self.board
+        moveDown = self.moveDown
+        moveUp = self.moveUp
+
         if player==1:
             #black pieces
             if board[start]==1:
@@ -216,13 +227,15 @@ class playCheckers():
         return False
 
     #display the ascii board
-    def printBoard(board):
+    def printBoard(self):
+        board = self.board
         for i in range(len(board)):
             print(board[i], end =" ")
             if i%8==7:
                 print("")
     #check if all enemy pieces are taken
-    def isOver(board):
+    def isOver(self):
+        board = self.board
         if 1 not in board and 3 not in board:
             return 2
         elif 2 not in board and 4 not in board:
@@ -232,7 +245,8 @@ class playCheckers():
 
 
     #creates initial setup
-    def setupBoard(board):
+    def setupBoard(self):
+        board = self.board
         for i in range(1,8,2):
             board[i]=1
         for i in range(8,16,2):
@@ -246,77 +260,99 @@ class playCheckers():
         for i in range(56,64,2):
             board[i]=2
     #player 1 turn, did not take prev move
-    def p1Turn(board):
-        global wasTake
-        printBoard(board)
+    def p1Turn(self):
+        wasTake = self.wasTake
+        board = self.board
+        self.printBoard()
         print("Player 1")
         print("Type current piece position or -1 to Forfeit: ")
-        start = getPos()
+        start = self.getPos()
 
         if start==-1:
-            forfeit(2)
+            self.forfeit(2)
             return True
         end = print("Type final piece position: ")
-        end = getPos()
+        end = self.getPos()
 
-        moveValid=makeMove(board, start, end, 1)
+        moveValid = self.makeMove(start, end, 1)
         if not moveValid:
-            p1Turn(board)
+            self.p1Turn(board)
         if wasTake:
-            p1Took(board, end)
+            self.p1Took(board, end)
         return True
     #p2 turn, did not take prev move
-    def p2Turn(board):
-        global wasTake
-        printBoard(board)
+    def p2Turn(self):
+        wasTake = self.wasTake
+        board = self.board
+        self.printBoard(board)
         print("Player 2")
         print("Type current piece position or -1 to Forfeit: ")
-        start = getPos()
+        start = self.getPos()
         if start==-1:
-            forfeit(1)
+            self.forfeit(1)
             return True
         end = print("Type final piece position: ")
-        end = getPos()
-        moveValid=makeMove(board, start, end, 2)
+        end = self.getPos()
+        moveValid=self.makeMove(start, end, 2)
         if not moveValid:
-            p2Turn(board)
+            self.p2Turn()
         return True
     #p1 turn, took on prev move
-    def p1Took(board, startPiece):
-        global wasTake
-        printBoard(board)
+    def p1Took(self, startPiece):
+        wasTake = self.wasTake
+        board = self.board
+        self.printBoard()
         print("Player 1")
         print("Start piece = "+str(startPiece))
         print("Type final piece position or -1 to end turn: ")
-        end = getPos()
+        end = self.getPos()
 
         if end == -1:
             wasTake=False
             return True
-        moveValid=makeMove(board, startPiece, end, 1)
+        moveValid=self.makeMove(startPiece, end, 1)
         if not moveValid:
-            p1Took(board, startPiece)
+            self.p1Took(startPiece)
         else:
-            p1Took(board, end)
+            self.p1Took(end)
 #p2 turn took on prev move
-    def p2Took(board, startPiece):
-        global wasTake
-        printBoard(board)
+    def p2Took(self, startPiece):
+        wasTake = self.wasTake
+        self.printBoard()
         print("Player 2")
         print("Start piece = "+str(startPiece))
         print("Type final piece position or -1 to end turn: ")
-        end = getPos()
+        end = self.getPos()
         if end == -1:
             wasTake=False
             return True
-        moveValid=makeMove(board, startPiece, end,2)
+        moveValid=self.makeMove(startPiece, end,2)
         if not moveValid:
-            p2Took(board, startPiece)
+            self.p2Took(startPiece)
         else:
-            p2Took(board, end)
-
-
-
+            self.p2Took(end)
+    
+    def play(self):
+        playerTurn = self.playerTurn
+        wasTake = self.wasTake
+        playerTurn = 1
+        wasTake = False
+        gameOn = self.gameOn
+        gameOn = True
+        self.setupBoard()
+        # main loop
+        while self.isOver() == 0 and self.gameOn:
+            if playerTurn == 1:
+                self.p1Turn()
+                playerTurn = 2
+            elif playerTurn == 2:
+                self.p2Turn()
+                playerTurn = 1
+        gameOn = False
+        if self.isOver() == 1:
+            print("Player 1 Wins!")
+        elif self.isOver() == 2:
+            print("Player 2 Wins!")
 
 # playerTurn=1
 # wasTake=False
