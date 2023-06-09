@@ -2,6 +2,8 @@
 #board array
 board=[0]*64
 
+tutorial = 
+
 #positions in the top row
 topRow=[0,1,2,3,4,5,6,7]
 
@@ -261,19 +263,21 @@ def p2Took(board, startPiece):
         p2Took(board, end)
 
 
-playerTurn=1
-wasTake=False
-setupBoard(board)
-#main loop
-while isOver(board)==0 and gameOn:
-    if playerTurn==1:
-        p1Turn(board)
-        playerTurn=2
-    elif playerTurn==2:
-        p2Turn(board)
-        playerTurn=1
-gameOn=False
-if isOver(board)==1:
-    print("Player 1 Wins!")
-elif isOver(board)==2:
-    print("Player 2 Wins!")
+
+# def start_game
+# playerTurn=1
+# wasTake=False
+# setupBoard(board)
+# #main loop
+# while isOver(board)==0 and gameOn:
+#     if playerTurn==1:
+#         p1Turn(board)
+#         playerTurn=2
+#     elif playerTurn==2:
+#         p2Turn(board)
+#         playerTurn=1
+# gameOn=False
+# if isOver(board)==1:
+#     print("Player 1 Wins!")
+# elif isOver(board)==2:
+#     print("Player 2 Wins!")
