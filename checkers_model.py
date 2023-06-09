@@ -88,6 +88,8 @@ class playCheckers:
         #end is checker ending index
         #remove will be position of checker to be removed if needed
         #otherwise -1
+        move_group = MoveGroupPythonInterfaceTutorial()
+        move_group.plan_and_execute_play(start,end,remove)
         pass
 
 
@@ -259,6 +261,7 @@ class playCheckers:
             board[i]=2
         for i in range(56,64,2):
             board[i]=2
+
     #player 1 turn, did not take prev move
     def p1Turn(self):
         wasTake = self.wasTake
@@ -353,25 +356,6 @@ class playCheckers:
             print("Player 1 Wins!")
         elif self.isOver() == 2:
             print("Player 2 Wins!")
-
-# playerTurn=1
-# wasTake=False
-# setupBoard(board)
-# #main loop
-# while isOver(board)==0 and gameOn:
-#     if playerTurn==1:
-#         p1Turn(board)
-#         playerTurn=2
-#     elif playerTurn==2:
-#         p2Turn(board)
-#         playerTurn=1
-# gameOn=False
-# if isOver(board)==1:
-#     print("Player 1 Wins!")
-# elif isOver(board)==2:
-#     print("Player 2 Wins!")
-
-
 
 
 class MoveGroupPythonInterfaceTutorial(object):
@@ -805,23 +789,18 @@ class MoveGroupPythonInterfaceTutorial(object):
 
 def main():
     try:
-
+        #setup
         tutorial = MoveGroupPythonInterfaceTutorial()
+        gameController = playCheckers()
         
         tutorial.go_to_joint_state() #go home
         tutorial.add_box() #add table, checker board, and boxes to scene
 
-        tutorial.plan_and_execute_play(1,16)
+        #start playing
+        input("============ Press `Enter` to start the game ...")
+        gameController.play()
 
-        input("============ Press `Enter` to make second move ...")
-        tutorial.plan_and_execute_play(16,26)
-
-        input("============ Press `Enter` to make third move ...")
-        tutorial.plan_and_execute_play(5, 13)
-    
-
-
-        
+        #game ends
         input("============ Press `Enter` to go back ...")
         tutorial.go_to_joint_state() #go home
 
