@@ -72,7 +72,7 @@ class playCheckers():
 
         self.wasTake = False
         self.playerTurn = 1
-        self.setupBoard()
+
 
     def callArm(self, start, end, remove):
         #start is the checker starting index
@@ -88,7 +88,12 @@ class playCheckers():
     #get a position input from user
     def getPos(self):
         try:
-            return int(input(""))
+            playerInput=int(input(""))
+            if playerInput<0 or playerInput>63:
+                    print("Invalid input. Please enter number between 0 and 63")
+                    return self.getPos()
+            else:
+                return playerInput
         except:
             print("Invalid input. Please enter number between 0 and 63")
             return self.getPos()
@@ -150,6 +155,7 @@ class playCheckers():
         return False
 
     def moveUp(self, start, end, enemy):
+        print("moveUp")
         wasTake = self.wasTake
         board = self.board
         callArm = self.callArm
@@ -202,6 +208,7 @@ class playCheckers():
                 if end-start>0:
                     return self.moveDown(start, end, 0)
                 elif end-start<0:
+                    print("p1Moveup")
                     return self.moveUp(start, end, 0)
             print("Invalid")
             return False
@@ -225,6 +232,17 @@ class playCheckers():
             print(board[i], end =" ")
             if i%8==7:
                 print("")
+        print("""
+        The checkerboard looks like the following:
+        0  1  2  3  4  5  6  7 
+        8  9  10 11 12 13 14 15 
+        16 17 18 19 20 21 22 23 
+        24 25 26 27 28 29 30 31 
+        32 33 34 35 36 37 38 39 
+        40 41 42 43 44 45 46 47 
+        48 49 50 51 52 53 54 55 
+        56 57 58 59 60 61 62 63
+        """)
     #check if all enemy pieces are taken
     def isOver(self):
         board = self.board
@@ -333,6 +351,25 @@ class playCheckers():
         gameOn = self.gameOn
         gameOn = True
         self.setupBoard()
+        
+        # instruction set
+        print("""
+        The checkerboard looks like the following:
+        0  1  2  3  4  5  6  7 
+        8  9  10 11 12 13 14 15 
+        16 17 18 19 20 21 22 23 
+        24 25 26 27 28 29 30 31 
+        32 33 34 35 36 37 38 39 
+        40 41 42 43 44 45 46 47 
+        48 49 50 51 52 53 54 55 
+        56 57 58 59 60 61 62 63
+
+        Player 1 takes starts in spots in 0 thru 23, and player 2 starts in spaces 40 thru 63.
+        To Play, enter the starting location (0-63) of the piece you want to move, press enter, then key in the ending location, and press enter.
+        The robot will do the rest!
+        Have fun :) 
+        """)
+        
         # main loop
         while self.isOver() == 0 and self.gameOn:
             if playerTurn == 1:
@@ -344,8 +381,10 @@ class playCheckers():
         gameOn = False
         if self.isOver() == 1:
             print("Player 1 Wins!")
+            exit()
         elif self.isOver() == 2:
             print("Player 2 Wins!")
+            exit()
 
 
 class MoveGroupPythonInterfaceTutorial(object):
@@ -380,21 +419,21 @@ class MoveGroupPythonInterfaceTutorial(object):
         pieces = {} #pieceID is the name of the box/cylinder and positionNumber is the integer 0-63 which defines the current location of the piece on the board
 
         planning_frame = move_group.get_planning_frame()
-        print("============ Planning frame: %s" % planning_frame)
+        #print("============ Planning frame: %s" % planning_frame)
 
         # We can also print the name of the end-effector link for this group:
         eef_link = move_group.get_end_effector_link()
-        print("============ End effector link: %s" % eef_link)
+        #print("============ End effector link: %s" % eef_link)
 
         # We can get a list of all the groups in the robot:
         group_names = robot.get_group_names()
-        print("============ Available Planning Groups:", robot.get_group_names())
+        #print("============ Available Planning Groups:", robot.get_group_names())
 
         # Sometimes for debugging it is useful to print the entire state of the
         # robot:
-        print("============ Printing robot state")
-        print(robot.get_current_state())
-        print("")
+        #print("============ Printing robot state")
+        #print(robot.get_current_state())
+        #print("")
         ## END_SUB_TUTORIAL
 
         # Misc variables
@@ -463,6 +502,7 @@ class MoveGroupPythonInterfaceTutorial(object):
         return plan, fraction
 
         ## END_SUB_TUTORIAL
+
     def plan_cartesian_path_to_box(self, scale=1):
         move_group = self.move_group
         ## Cartesian Paths
@@ -485,41 +525,19 @@ class MoveGroupPythonInterfaceTutorial(object):
 
         # Note: We are just planning, not asking move_group to actually move the robot yet:
         return plan, fraction
-    """ 
-    def plan_cartesian_path_to_next_box(self, scale=1):
-        move_group = self.move_group
-        ## Cartesian Paths
-
-        waypoints = []
-
-        wpose = move_group.get_current_pose().pose
-        wpose.position.x = 0.32  # First move up (z)
-        wpose.position.y = 0.17  # and sideways (y)
-        wpose.position.z = 0.33  # First move up (z)
-        wpose.orientation.x = 1.0
-        wpose.orientation.y = 0
-        wpose.orientation.z = 0
-        wpose.orientation.w = 0.0
-        
-        waypoints.append(copy.deepcopy(wpose))
-        (plan, fraction) = move_group.compute_cartesian_path(
-            waypoints, 0.01, 0.0  # waypoints to follow  # eef_step
-        )  # jump_threshold
-
-        # Note: We are just planning, not asking move_group to actually move the robot yet:
-        return plan, fraction
-     """
-    #test
+    
     def plan_and_execute_play(self,start,end,casualty=-1, scale=1):
         move_group = self.move_group
         pieces_array = self.pieces
         #figure out what piece we are asked to move
-        print(start,end)
+
         piece_id = self.get_piece_at_location(start)
 
         #if piece needs to be deleted, figure out piece name and delete it from the scene
         if(casualty!=-1):
+
             oof_piece_id = self.get_piece_at_location(casualty)
+
             self.remove_box(oof_piece_id)
         
         #start location
@@ -536,7 +554,8 @@ class MoveGroupPythonInterfaceTutorial(object):
         wpose = move_group.get_current_pose().pose
         wpose.position.x = 0.5 - 0.56 / 2 + 0.07 / 2 + i_start * 0.07
         wpose.position.y = - 0.56 / 2 + 0.07 / 2 + j_start * 0.07	
-        wpose.position.z = 0.34    
+        wpose.position.z = 0.335    
+        
         wpose.orientation.x = 1
         wpose.orientation.y = 0 
         wpose.orientation.z = 0
@@ -560,7 +579,8 @@ class MoveGroupPythonInterfaceTutorial(object):
         wpose = move_group.get_current_pose().pose
         wpose.position.x = 0.5 - 0.56 / 2 + 0.07 / 2 + i_end * 0.07
         wpose.position.y = - 0.56 / 2 + 0.07 / 2 + j_end * 0.07	
-        wpose.position.z = 0.34    
+        wpose.position.z = 0.335    
+        
         wpose.orientation.x = 1
         wpose.orientation.y = 0 
         wpose.orientation.z = 0
@@ -695,45 +715,11 @@ class MoveGroupPythonInterfaceTutorial(object):
                 marker_array.markers.append(marker)
                 marker_id += 1
 
-        """ marker_pub = rospy.Publisher("checkerboard_markers", MarkerArray, queue_size=1) """
-        print(pieces_array)
         marker_pub = self.marker_array_publisher
         marker_pub.publish(marker_array)
-
-
-        ## END_SUB_TUTORIAL
-        # Copy local variables back to class variables. In practice, you should use the class
-        # variables directly unless you have a good reason not to.
         self.box_name = box_name
         return self.wait_for_state_update(box_is_known=True, timeout=timeout)
     
-    """ def move_checker_board_square(self, timeout=4, start, end, remove):
-       #start position (0-63), end position (0-63), remove (position of a piece to remove (0-63), -1 if null)
-
-
-        marker_array = self.marker_array
-        marker_to_move = marker_array.markers[3]
-        marker_to_move.color.r = 1.0
-        marker_to_move.color.g = 0.0
-        marker_to_move.color.b = 0.0
-        marker_to_move = marker_array.markers[5]
-        marker_to_move.color.r = 0.0
-        marker_to_move.color.g = 1.0
-        marker_to_move.color.b = 0.0
-        marker_to_move = marker_array.markers[7]
-        marker_to_move.color.r = 0.0
-        marker_to_move.color.g = 0.0
-        marker_to_move.color.b = 1.0
-        marker_to_move.pose.position.x = 2
-        marker_to_move.pose.position.y = 2
-
-        
-        marker_pub = self.marker_array_publisher
-        marker_pub.publish(marker_array)
-       
-
-        return self.wait_for_state_update(box_is_known=True, timeout=timeout)
- """
     def attach_box(self, box, timeout=4):
         box_name = box #box name should be its id in "boxi_j" form
         robot = self.robot
@@ -772,10 +758,12 @@ class MoveGroupPythonInterfaceTutorial(object):
         )
 
     def remove_box(self, box, timeout=4):
+        
         # only need to use this if removing piece from scene entirely
         box_name = box #box name should be its id in "boxi_j" form
         scene = self.scene
         scene.remove_world_object(box_name)
+        self.pieces.pop(box_name)
         #scene.remove_world_object("table1")
         return self.wait_for_state_update(
             box_is_attached=False, box_is_known=False, timeout=timeout
@@ -792,11 +780,9 @@ def main():
         tutorial.add_box() #add table, checker board, and boxes to scene
 
         #start playing
-        input("============ Press `Enter` to start the game ...")
         gameController.play()
 
         #game ends
-        input("============ Press `Enter` to go back ...")
         tutorial.go_to_joint_state() #go home
 
         print("============ Game Complete!")
