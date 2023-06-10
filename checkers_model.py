@@ -89,7 +89,7 @@ class playCheckers():
     def getPos(self):
         try:
             playerInput=int(input(""))
-            if playerInput<0 or playerInput>63:
+            if playerInput<-1 or playerInput>63:
                     print("Invalid input. Please enter number between 0 and 63")
                     return self.getPos()
             else:
@@ -121,7 +121,7 @@ class playCheckers():
             if board[end]==0:
                 board[end]=board[start]
                 board[start]=0
-                wasTake=False
+                self.wasTake=False
                 #kings black piece
                 if enemy==0 and end in bottomRow:
                     board[end]=3
@@ -135,7 +135,7 @@ class playCheckers():
                 board[end]=board[start]
                 board[start+9]=0
                 board[start]=0
-                wasTake = True
+                self.wasTake = True
                 #kings black piece
                 if enemy==0 and end in bottomRow:
                     board[end]=3
@@ -146,7 +146,7 @@ class playCheckers():
                 board[end]=board[start]
                 board[start+7]=0
                 board[start]=0
-                wasTake = True
+                self.wasTake = True
                 if enemy==0 and end in bottomRow:
                     board[end]=3
                 callArm(start, end, start+7)
@@ -165,7 +165,7 @@ class playCheckers():
             if board[end]==0:
                 board[end]=board[start]
                 board[start]=0
-                wasTake = False
+                self.wasTake = False
                 #kings red piece
                 if enemy==1 and end in topRow:
                     board[end]=4
@@ -176,7 +176,7 @@ class playCheckers():
                 board[end]=board[start]
                 board[start-9]=0
                 board[start]=0
-                wasTake = True
+                self.wasTake = True
                 #kings red piece
                 if enemy==1 and end in topRow:
                     board[end]=4
@@ -187,7 +187,7 @@ class playCheckers():
                 board[end]=board[start]
                 board[start-7]=0
                 board[start]=0
-                wasTake = True
+                self.wasTake = True
                 #kings red piece
                 if enemy==1 and end in topRow:
                     board[end]=4
@@ -288,7 +288,7 @@ class playCheckers():
         moveValid = self.makeMove(start, end, 1)
         if not moveValid:
             self.p1Turn()
-        if wasTake:
+        if self.wasTake:
             self.p1Took(end)
         return True
     #p2 turn, did not take prev move
@@ -307,6 +307,8 @@ class playCheckers():
         moveValid=self.makeMove(start, end, 2)
         if not moveValid:
             self.p2Turn()
+        if self.wasTake:
+            self.p2Took(end)
         return True
     #p1 turn, took on prev move
     def p1Took(self, startPiece):
@@ -319,7 +321,7 @@ class playCheckers():
         end = self.getPos()
 
         if end == -1:
-            wasTake=False
+            self.wasTake=False
             return True
         moveValid=self.makeMove(startPiece, end, 1)
         if not moveValid:
@@ -335,7 +337,7 @@ class playCheckers():
         print("Type final piece position or -1 to end turn: ")
         end = self.getPos()
         if end == -1:
-            wasTake=False
+            self.wasTake=False
             return True
         moveValid=self.makeMove(startPiece, end,2)
         if not moveValid:
@@ -347,7 +349,7 @@ class playCheckers():
         playerTurn = self.playerTurn
         wasTake = self.wasTake
         playerTurn = 1
-        wasTake = False
+        self.wasTake = False
         gameOn = self.gameOn
         gameOn = True
         self.setupBoard()
