@@ -5,5 +5,5 @@ Currently it uses a tf2 path planning algorithm, but we want to change this soon
 Everything needed to play the game (including setup and game logic) is contained within the checkers_model file. Instructions will be posted soon.
 
 For now, you can view a demo of our project at the following links:
-[Short Clips Performing Complex Moves](https://youtu.be/DGBd_ofv7tk)
+[Short Clips Performing Complex Moves](https://youtu.be/DGBd_ofv7tk) \n
 [Longer Video of Gameplay](https://youtu.be/wFasy0Ej8SI)
